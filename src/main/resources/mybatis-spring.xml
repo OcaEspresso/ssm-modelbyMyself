@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:context="http://www.springframework.org/schema/context"
+           xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        https://www.springframework.org/schema/context/spring-context.xsd">
+        <!--  读取jdbc.properties-->
+          <context:property-placeholder location="classpath:jdbc.properties"/>
+         <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+            <property name="driverClassName" value="${jdbc.driver}" />
+            <property name="url" value="${jdbc.url}" />
+            <property name="username" value="${jdbc.username}" />
+            <property name="password" value="${jdbc.password}" />
+         </bean>
+        <!--  将SqlSessionFactory交给spring来管理-->
+         <bean class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource" />
+             
+        <!--    告诉mapper 我的mapper的映射文件在哪-->
+        <property name="mapperLocations" value="classpath:mapper/*.xml" />
+
+        <!--    为该包下的类 生成别名-->
+        <property name="typeAliasesPackage" value="com.company.entity" />
+        </bean>
+    
+        <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+            <!--    告诉spring 你将com.company.mapper下的所有mapper 为我们产生代理，并放到spring的容
+        器中-->
+        <property name="basePackage" value="com.company.mapper" />
+ </bean>
+    
+    
+         <context:component-scan base-package="com.company.service" />
+        
+        <import resource="tx.xml"></import>
+ </beans>
